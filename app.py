@@ -300,13 +300,14 @@ if __name__ == "__main__":
     daily_max_today_table = daily_max_today_table.sort_values(by='ObsType')
     daily_max_today_table = daily_max_today_table.rename(columns={"DateTimeStr":"Date",
                                                                   "SFDItext":"SFDI",
-                                                                  "ERCtext":"ERC Class\n(Hot and Dry)",
-                                                                  "BItext":"BI Class\n(Windy)",
-                                                                  "DRLClass":"Dispatch RL\n(ERC+BI)" , 
+                                                                  "ERCtext":"ERC Class",
+                                                                  "BItext":"BI Class",
+                                                                  "DRLClass":"Dispatch RL" , 
                                                                   "BIDailyMaxPerc":"BI Percentile",
                                                                   "ERCDailyMaxPerc":"ERC Percentile"})
-    
-    daily_max_today_table.to_csv('Tables/fire_danger_table_today.csv')
+    if len(daily_max_today_table.ObsType.unique()) == 2:
+        daily_max_today_table = daily_max_today_table[daily_max_today_table.ObsType == "O"]
+    daily_max_today_table.to_csv('Tables/fire_danger_table_today.csv', index=False)
     
     
     # Make the Forecast Table
@@ -317,13 +318,13 @@ if __name__ == "__main__":
     daily_max_tomorrow_table=daily_max_tomorrow_table.drop(columns=['SFDIDailyMaxPerc','SFDI','BIClass','ERCClass'])[['FDRA','ObsType','FuelModel','DateTimeStr','ERC','ERCDailyMaxPerc','BI','BIDailyMaxPerc','ERCtext','BItext','DRLClass','SFDItext']].round(1)
     daily_max_tomorrow_table = daily_max_tomorrow_table.rename(columns={"DateTimeStr":"Date",
                                                                         "SFDItext":"SFDI",
-                                                                        "ERCtext":"ERC Class\n(Hot and Dry)",
-                                                                        "BItext":"BI Class\n(Windy)",
-                                                                        "DRLClass":"Dispatch RL\n(ERC+BI)" , 
+                                                                        "ERCtext":"ERC Class",
+                                                                        "BItext":"BI Class",
+                                                                        "DRLClass":"Dispatch RL" , 
                                                                         "BIDailyMaxPerc":"BI Percentile",
                                                                         "ERCDailyMaxPerc":"ERC Percentile"})
     
-    daily_max_tomorrow_table.to_csv('Tables/fire_danger_table_tomorrow.csv')
+    daily_max_tomorrow_table.to_csv('Tables/fire_danger_table_tomorrow.csv', index=False)
     
        
     
