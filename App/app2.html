@@ -118,7 +118,6 @@
 
         /* --- Hero Image Section --- */
         .hero {
-            /* Using a high-quality Unsplash forest image to mimic FS.usda.gov */
             background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
@@ -147,7 +146,7 @@
 
         /* --- Main Layout & Tabs --- */
         main {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 40px auto;
             padding: 0 20px;
             min-height: 50vh;
@@ -161,7 +160,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Section Titles --- */
+        /* --- Section Titles & Actions --- */
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -177,16 +176,50 @@
             color: var(--fs-green);
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .date-display {
             font-size: 1.1rem;
             color: var(--text-light);
             font-weight: 600;
         }
 
+        /* Standard Outlined Download Button */
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--fs-green);
+            background-color: var(--bg-page);
+            border: 2px solid var(--fs-green);
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-download:hover {
+            background-color: var(--fs-green);
+            color: #ffffff;
+        }
+
+        .btn-download svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            fill: currentColor;
+        }
+
         /* --- Tables --- */
         .table-wrapper {
             margin-bottom: 50px;
             overflow-x: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
         table {
@@ -195,10 +228,11 @@
             text-align: left;
             border-top: 2px solid var(--text-main);
             border-bottom: 2px solid var(--text-main);
+            white-space: nowrap;
         }
 
         th, td {
-            padding: 14px 16px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -206,7 +240,7 @@
             background-color: var(--bg-page);
             font-weight: 700;
             color: var(--text-main);
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         tr:nth-child(even) { background-color: var(--bg-gray); }
@@ -296,7 +330,7 @@
         .error-msg {
             padding: 20px;
             color: #d32f2f;
-            text-align: center;
+            text-align: left;
             font-weight: 600;
             background-color: #fce4e4;
         }
@@ -340,6 +374,16 @@
             .hero p { font-size: 1.1rem; }
             .controls { flex-direction: column; align-items: stretch; }
             .footer-inner { flex-direction: column; text-align: center; }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
         }
     </style>
 </head>
@@ -355,7 +399,6 @@
 
     <!-- Agency Header -->
     <header class="site-header">
-        <!-- USFS Shield Logo -->
         <img src="https://upload.wikimedia.org/wikipedia/commons/e/ee/US_Forest_Service_logo.svg" alt="U.S. Forest Service Shield" class="agency-logo">
         <div class="agency-titles">
             <h2 class="usda-title">U.S. Department of Agriculture</h2>
@@ -381,46 +424,48 @@
         <!-- TAB 1: DATA TABLES -->
         <div id="tab-tables" class="tab-content active">
             
+            <!-- Observed Table Wrapper -->
             <div class="table-wrapper">
                 <div class="section-header">
                     <h2>Observed Fire Danger</h2>
-                    <span id="observed-date" class="date-display">Loading date...</span>
+                    <div class="header-actions">
+                        <span id="observed-date" class="date-display">Loading date...</span>
+                        <a href="fire_danger_table_today.csv" download="Observed_Fire_Danger.csv" class="btn-download">
+                            <!-- Download Icon (SVG) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            Download CSV
+                        </a>
+                    </div>
                 </div>
                 <table>
-                    <thead>
-                        <tr>
-                            <th>FDRA</th>
-                            <th>Fuel Model</th>
-                            <th>ERC</th>
-                            <th>BI</th>
-                            <th>DRL Class</th>
-                            <th>Adjective Rating (SFDI)</th>
-                        </tr>
+                    <thead id="observed-head">
+                        <!-- Headers generated by Javascript -->
                     </thead>
                     <tbody id="observed-body">
-                        <tr><td colspan="6" class="error-msg">Loading data...</td></tr>
+                        <tr><td class="error-msg">Loading data...</td></tr>
                     </tbody>
                 </table>
             </div>
 
+            <!-- Forecast Table Wrapper -->
             <div class="table-wrapper">
                 <div class="section-header">
                     <h2>Forecast Fire Danger</h2>
-                    <span id="forecast-date" class="date-display">Loading date...</span>
+                    <div class="header-actions">
+                        <span id="forecast-date" class="date-display">Loading date...</span>
+                        <a href="fire_danger_table_tomorrow.csv" download="Forecast_Fire_Danger.csv" class="btn-download">
+                            <!-- Download Icon (SVG) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            Download CSV
+                        </a>
+                    </div>
                 </div>
                 <table>
-                    <thead>
-                        <tr>
-                            <th>FDRA</th>
-                            <th>Fuel Model</th>
-                            <th>Forecast ERC</th>
-                            <th>Forecast BI</th>
-                            <th>Forecast DRL</th>
-                            <th>Adjective Rating (SFDI)</th>
-                        </tr>
+                    <thead id="forecast-head">
+                        <!-- Headers generated by Javascript -->
                     </thead>
                     <tbody id="forecast-body">
-                        <tr><td colspan="6" class="error-msg">Loading data...</td></tr>
+                        <tr><td class="error-msg">Loading data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -504,6 +549,9 @@
         const OBSERVED_CSV_URL = 'fire_danger_table_today.csv';
         const FORECAST_CSV_URL = 'fire_danger_table_tomorrow.csv'; 
 
+        // Columns that should be color-coded based on their Adjective rating
+        const COLOR_COLUMNS = ['ERCtext', 'BItext', 'DRLClass', 'SFDItext'];
+
         function getRatingClass(rating) {
             if (!rating) return '';
             switch(rating.toLowerCase().trim()) {
@@ -534,34 +582,62 @@
             return data;
         }
 
-        function populateTable(tableId, dateId, data) {
-            const tbody = document.getElementById(tableId);
+        // Dynamically populates the table head and body based on CSV headers
+        function populateTable(headId, bodyId, dateId, data) {
+            const thead = document.getElementById(headId);
+            const tbody = document.getElementById(bodyId);
             const dateSpan = document.getElementById(dateId);
+            
+            thead.innerHTML = ''; 
             tbody.innerHTML = ''; 
 
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="error-msg">No data available in the CSV file.</td></tr>`;
+                tbody.innerHTML = `<tr><td class="error-msg">No data available in the CSV file.</td></tr>`;
                 dateSpan.textContent = "Date unknown";
                 return;
             }
 
+            // Set Header Date
             dateSpan.textContent = data[0]['DateTimeStr'] || "Date unknown";
 
+            // Extract Headers from first row
+            const headers = Object.keys(data[0]);
+
+            // Build Table Header (<thead>)
+            const trHead = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header === '' ? 'Row' : header;
+                trHead.appendChild(th);
+            });
+            thead.appendChild(trHead);
+
+            // Build Table Body (<tbody>)
             data.forEach(row => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${row['FDRA']}</strong></td>
-                    <td>${row['FuelModel']}</td>
-                    <td>${row['ERC']}</td>
-                    <td>${row['BI']}</td>
-                    <td><span class="rating ${getRatingClass(row['DRLClass'])}">${row['DRLClass']}</span></td>
-                    <td><span class="rating ${getRatingClass(row['SFDItext'])}">${row['SFDItext']}</span></td>
-                `;
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    const cellValue = row[header];
+
+                    // Bold the FDRA column to make it stand out
+                    if (header === 'FDRA') {
+                        td.innerHTML = `<strong>${cellValue}</strong>`;
+                    } 
+                    // Apply Adjective color classes if column is in the color list
+                    else if (COLOR_COLUMNS.includes(header)) {
+                        td.innerHTML = `<span class="rating ${getRatingClass(cellValue)}">${cellValue}</span>`;
+                    } 
+                    // Regular text for all other columns
+                    else {
+                        td.textContent = cellValue;
+                    }
+                    tr.appendChild(td);
+                });
                 tbody.appendChild(tr);
             });
         }
 
-        async function fetchAndRenderData(url, tableId, dateId) {
+        async function fetchAndRenderData(url, headId, bodyId, dateId) {
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -569,18 +645,19 @@
                 }
                 const csvText = await response.text();
                 const data = parseCSV(csvText);
-                populateTable(tableId, dateId, data);
+                populateTable(headId, bodyId, dateId, data);
             } catch (error) {
                 console.error("Error loading CSV:", error);
-                document.getElementById(tableId).innerHTML = `<tr><td colspan="6" class="error-msg">Could not load <b>${url}</b>. File missing or you are not running a local web server.</td></tr>`;
+                document.getElementById(bodyId).innerHTML = `<tr><td class="error-msg">Could not load <b>${url}</b>. File missing or you are not running a local web server.</td></tr>`;
                 document.getElementById(dateId).textContent = "";
             }
         }
 
         // Initialize App
         window.onload = function() {
-            fetchAndRenderData(OBSERVED_CSV_URL, 'observed-body', 'observed-date');
-            fetchAndRenderData(FORECAST_CSV_URL, 'forecast-body', 'forecast-date');
+            fetchAndRenderData(OBSERVED_CSV_URL, 'observed-head', 'observed-body', 'observed-date');
+            fetchAndRenderData(FORECAST_CSV_URL, 'forecast-head', 'forecast-body', 'forecast-date');
+            
             updateGraphs(); 
         };
     </script>
