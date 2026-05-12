@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+Constants.py
+Data/brh_histfd_Y.csv
+Data/brl_histfd_Y_Z.csv
+Data/cskte_histfd_Y.csv
+Data/csktw_histfd_Y.csv
+Data/lefdr_histfd_Y.csv
+Data/lwfdr_histfd_Y.csv
