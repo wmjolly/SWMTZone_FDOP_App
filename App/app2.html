@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SW Montana Zone Fire Danger | U.S. Forest Service</title>
+    
+    <!-- Official USDA/USWDS Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --fs-green: #1a5b40;
+            --fs-green-hover: #113d2a;
+            --text-main: #1b1b1b;
+            --text-light: #565c65;
+            --bg-page: #ffffff;
+            --bg-gray: #f4f4f4;
+            --border-color: #dfe1e2;
+            --focus-blue: #2491ff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        /* --- Standard USWDS Gov Banner --- */
+        .usa-banner {
+            background-color: #f0f0f0;
+            font-size: 0.85rem;
+            padding: 4px 20px;
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .usa-banner-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; }
+        .usa-banner img { width: 16px; margin-right: 8px; }
+
+        /* --- Official Site Header --- */
+        .site-header {
+            background-color: #ffffff;
+            padding: 25px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .agency-logo {
+            height: 75px;
+            margin-right: 20px;
+        }
+
+        .agency-titles {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .agency-titles .usda-title {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: var(--text-main);
+            margin: 0 0 2px 0;
+        }
+
+        .agency-titles .fs-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--fs-green);
+            margin: 0;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+        /* --- Primary Navigation (Acts as Tabs) --- */
+        .primary-nav {
+            background-color: var(--fs-green);
+            padding: 0 20px;
+        }
+
+        .nav-list {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: 600;
+            padding: 16px 24px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s;
+            border-bottom: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: var(--fs-green-hover);
+        }
+
+        .nav-item.active {
+            border-bottom: 4px solid #ffffff;
+            background-color: var(--fs-green-hover);
+        }
+
+        /* --- Hero Image Section --- */
+        .hero {
+            /* Using a high-quality Unsplash forest image to mimic FS.usda.gov */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            color: #ffffff;
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--fs-green);
+        }
+
+        .hero h1 {
+            margin: 0 0 15px 0;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 400;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* --- Main Layout & Tabs --- */
+        main {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            min-height: 50vh;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Section Titles --- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin: 0 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--fs-green);
+        }
+
+        .date-display {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        /* --- Tables --- */
+        .table-wrapper {
+            margin-bottom: 50px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            border-top: 2px solid var(--text-main);
+            border-bottom: 2px solid var(--text-main);
+        }
+
+        th, td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--bg-page);
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+
+        tr:nth-child(even) { background-color: var(--bg-gray); }
+        tr:hover { background-color: #eef1f2; }
+
+        /* NWCG Fire Danger Colors - Standard colors */
+        .rating {
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 4px;
+            display: inline-block;
+            text-align: center;
+            min-width: 80px;
+            font-size: 0.95rem;
+        }
+        .rating-low { background-color: #2ecc71; color: #111; }
+        .rating-mod { background-color: #3498db; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.4); }
+        .rating-high { background-color: #f1c40f; color: #111; }
+        .rating-vh { background-color: #e67e22; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.4); }
+        .rating-ext { background-color: #e74c3c; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.4); }
+
+        /* --- Graph Controls --- */
+        .controls {
+            background: var(--bg-gray);
+            padding: 25px;
+            border-radius: 0;
+            border-left: 6px solid var(--fs-green);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .controls label {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        .controls select {
+            padding: 12px 40px 12px 15px;
+            font-size: 1.05rem;
+            border: 1px solid #757575;
+            background-color: #ffffff;
+            cursor: pointer;
+            font-family: inherit;
+            color: var(--text-main);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231b1b1b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px auto;
+        }
+
+        /* --- Graph Grid --- */
+        .graph-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+        }
+
+        .graph-card {
+            background: #ffffff;
+            padding: 0;
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--fs-green);
+        }
+
+        .graph-card h3 {
+            margin: 0;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            color: var(--text-main);
+            background-color: var(--bg-gray);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .graph-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            min-height: 300px;
+            object-fit: contain;
+            background-color: #fafafa;
+        }
+
+        .error-msg {
+            padding: 20px;
+            color: #d32f2f;
+            text-align: center;
+            font-weight: 600;
+            background-color: #fce4e4;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background-color: var(--bg-gray);
+            border-top: 1px solid var(--border-color);
+            padding: 40px 20px;
+            margin-top: 40px;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            height: 60px;
+            opacity: 0.8;
+        }
+
+        .footer-text p {
+            margin: 0 0 5px 0;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .footer-text p.disclaimer {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+
+        /* Responsive Details */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { font-size: 1.1rem; }
+            .controls { flex-direction: column; align-items: stretch; }
+            .footer-inner { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Small Gov Banner -->
+    <div class="usa-banner">
+        <div class="usa-banner-inner">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e6/Flag_of_the_United_States_of_America_%283-2%29.svg" alt="US flag">
+            <span>An official website of the United States government</span>
+        </div>
+    </div>
+
+    <!-- Agency Header -->
+    <header class="site-header">
+        <!-- USFS Shield Logo -->
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/ee/US_Forest_Service_logo.svg" alt="U.S. Forest Service Shield" class="agency-logo">
+        <div class="agency-titles">
+            <h2 class="usda-title">U.S. Department of Agriculture</h2>
+            <h1 class="fs-title">Forest Service</h1>
+        </div>
+    </header>
+
+    <!-- Primary Navigation / Tab System -->
+    <nav class="primary-nav">
+        <ul class="nav-list">
+            <li><button class="nav-item active" onclick="openTab(event, 'tab-tables')">Data Tables</button></li>
+            <li><button class="nav-item" onclick="openTab(event, 'tab-graphs')">Station Graphs</button></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Banner -->
+    <div class="hero">
+        <h1>Northern Rockies Southwest Montana Zone</h1>
+        <p>Interagency Fire Danger Operating Plan (FDOP) Dashboard</p>
+    </div>
+
+    <main>
+        <!-- TAB 1: DATA TABLES -->
+        <div id="tab-tables" class="tab-content active">
+            
+            <div class="table-wrapper">
+                <div class="section-header">
+                    <h2>Observed Fire Danger</h2>
+                    <span id="observed-date" class="date-display">Loading date...</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>FDRA</th>
+                            <th>Fuel Model</th>
+                            <th>ERC</th>
+                            <th>BI</th>
+                            <th>DRL Class</th>
+                            <th>Adjective Rating (SFDI)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="observed-body">
+                        <tr><td colspan="6" class="error-msg">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-wrapper">
+                <div class="section-header">
+                    <h2>Forecast Fire Danger</h2>
+                    <span id="forecast-date" class="date-display">Loading date...</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>FDRA</th>
+                            <th>Fuel Model</th>
+                            <th>Forecast ERC</th>
+                            <th>Forecast BI</th>
+                            <th>Forecast DRL</th>
+                            <th>Adjective Rating (SFDI)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="forecast-body">
+                        <tr><td colspan="6" class="error-msg">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+
+        <!-- TAB 2: GRAPHS -->
+        <div id="tab-graphs" class="tab-content">
+            
+            <div class="controls">
+                <label for="fdra-selector">Select Fire Danger Rating Area (FDRA):</label>
+                <select id="fdra-selector" onchange="updateGraphs()">
+                    <option value="cskt_west">CSKT West</option>
+                    <option value="cskt_east">CSKT East</option>
+                    <option value="lolo_east">Lolo East</option>
+                    <option value="lolo_west">Lolo West</option>
+                    <option value="bitterroot_low">Bitterroot Low</option>
+                    <option value="bitterroot_high">Bitterroot High</option>
+                </select>
+            </div>
+
+            <div class="graph-grid">
+                <div class="graph-card">
+                    <h3>Energy Release Component (ERC)</h3>
+                    <img id="img-erc" src="graphs/cskt_west_erc.png" alt="ERC Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
+                </div>
+                <div class="graph-card">
+                    <h3>Burning Index (BI)</h3>
+                    <img id="img-bi" src="graphs/cskt_west_bi.png" alt="BI Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
+                </div>
+                <div class="graph-card">
+                    <h3>100-hr Fuel Moisture</h3>
+                    <img id="img-100" src="graphs/cskt_west_100.png" alt="100-hr FM Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
+                </div>
+                <div class="graph-card">
+                    <h3>1000-hr Fuel Moisture</h3>
+                    <img id="img-1000" src="graphs/cskt_west_1000.png" alt="1000-hr FM Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ee/US_Forest_Service_logo.svg" alt="USFS Logo" class="footer-logo">
+            <div class="footer-text">
+                <p><strong>Forest Service</strong></p>
+                <p>U.S. Department of Agriculture</p>
+                <p class="disclaimer">Data provided is for informational purposes only. Consult WIMS or the local dispatch center for official indices.</p>
+                <p class="disclaimer">USDA is an equal opportunity provider, employer, and lender.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- TAB LOGIC ---
+        function openTab(evt, tabId) {
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            const navItems = document.getElementsByClassName("nav-item");
+            for (let i = 0; i < navItems.length; i++) {
+                navItems[i].classList.remove("active");
+            }
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // --- DYNAMIC GRAPHS LOGIC ---
+        function updateGraphs() {
+            const fdra = document.getElementById("fdra-selector").value;
+            document.getElementById("img-erc").src = `graphs/${fdra}_erc.png`;
+            document.getElementById("img-bi").src = `graphs/${fdra}_bi.png`;
+            document.getElementById("img-100").src = `graphs/${fdra}_100.png`;
+            document.getElementById("img-1000").src = `graphs/${fdra}_1000.png`;
+        }
+
+        // --- DATA TABLE LOGIC ---
+        const OBSERVED_CSV_URL = 'fire_danger_table_today.csv';
+        const FORECAST_CSV_URL = 'fire_danger_table_tomorrow.csv'; 
+
+        function getRatingClass(rating) {
+            if (!rating) return '';
+            switch(rating.toLowerCase().trim()) {
+                case 'l': case 'low': return 'rating-low';
+                case 'm': case 'mod': case 'moderate': return 'rating-mod';
+                case 'h': case 'high': return 'rating-high';
+                case 'vh': case 'very high': return 'rating-vh';
+                case 'e': case 'extreme': return 'rating-ext';
+                default: return '';
+            }
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const currentLine = lines[i].split(',');
+                if (currentLine.length === headers.length) {
+                    const row = {};
+                    for (let j = 0; j < headers.length; j++) {
+                        row[headers[j]] = currentLine[j].trim();
+                    }
+                    data.push(row);
+                }
+            }
+            return data;
+        }
+
+        function populateTable(tableId, dateId, data) {
+            const tbody = document.getElementById(tableId);
+            const dateSpan = document.getElementById(dateId);
+            tbody.innerHTML = ''; 
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="error-msg">No data available in the CSV file.</td></tr>`;
+                dateSpan.textContent = "Date unknown";
+                return;
+            }
+
+            dateSpan.textContent = data[0]['DateTimeStr'] || "Date unknown";
+
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${row['FDRA']}</strong></td>
+                    <td>${row['FuelModel']}</td>
+                    <td>${row['ERC']}</td>
+                    <td>${row['BI']}</td>
+                    <td><span class="rating ${getRatingClass(row['DRLClass'])}">${row['DRLClass']}</span></td>
+                    <td><span class="rating ${getRatingClass(row['SFDItext'])}">${row['SFDItext']}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function fetchAndRenderData(url, tableId, dateId) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`File not found: ${url}`);
+                }
+                const csvText = await response.text();
+                const data = parseCSV(csvText);
+                populateTable(tableId, dateId, data);
+            } catch (error) {
+                console.error("Error loading CSV:", error);
+                document.getElementById(tableId).innerHTML = `<tr><td colspan="6" class="error-msg">Could not load <b>${url}</b>. File missing or you are not running a local web server.</td></tr>`;
+                document.getElementById(dateId).textContent = "";
+            }
+        }
+
+        // Initialize App
+        window.onload = function() {
+            fetchAndRenderData(OBSERVED_CSV_URL, 'observed-body', 'observed-date');
+            fetchAndRenderData(FORECAST_CSV_URL, 'forecast-body', 'forecast-date');
+            updateGraphs(); 
+        };
+    </script>
+</body>
+</html>

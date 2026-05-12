@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SW Montana Zone Fire Danger</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --bg-color: #f4f7f6;
+            --table-border: #e0e0e0;
+            --tab-bg: #34495e;
+            --tab-active: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 20px 0 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        header p {
+            margin: 5px 0 15px 0;
+            font-size: 1rem;
+            color: #bdc3c7;
+        }
+
+        /* --- Tab System Styles --- */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn {
+            background-color: var(--tab-bg);
+            color: #bdc3c7;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 8px 8px 0 0;
+            margin: 0 5px;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            background-color: #3e5871;
+            color: white;
+        }
+
+        .tab-btn.active {
+            background-color: var(--tab-active);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 30px;
+            color: var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        
+        .date-display {
+            font-size: 1rem;
+            color: #555;
+            font-weight: normal;
+        }
+
+        /* --- Table Styles --- */
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--table-border);
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #ecf0f1;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* --- NWCG Fire Danger Colors --- */
+        .rating {
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            text-align: center;
+            min-width: 70px;
+        }
+        .rating-low { background-color: #2ecc71; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.3); }
+        .rating-mod { background-color: #3498db; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.3); }
+        .rating-high { background-color: #f1c40f; color: black; }
+        .rating-vh { background-color: #e67e22; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.3); }
+        .rating-ext { background-color: #e74c3c; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.3); }
+        
+        /* --- Graph Styles --- */
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .controls label {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        .controls select {
+            padding: 10px;
+            font-size: 1.05rem;
+            border-radius: 4px;
+            border: 1px solid var(--table-border);
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .graph-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .graph-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .graph-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        .graph-card img {
+            width: 100%;
+            height: auto;
+            border: 1px solid var(--table-border);
+            border-radius: 4px;
+            background-color: #fcfcfc;
+            min-height: 300px;
+            object-fit: contain;
+        }
+
+        .error-msg {
+            padding: 20px;
+            color: #e74c3c;
+            text-align: center;
+            font-style: italic;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Northern Rockies Southwest Montana Zone</h1>
+        <p>Interagency Fire Danger Operating Plan (FDOP) Dashboard</p>
+        
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'tab-tables')">Data Tables</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-graphs')">Graphs</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- TAB 1: DATA TABLES -->
+        <div id="tab-tables" class="tab-content active">
+            <div class="section-title">
+                <h2>Observed Fire Danger</h2>
+                <span id="observed-date" class="date-display">Loading date...</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>FDRA</th>
+                            <th>Fuel Model</th>
+                            <th>ERC</th>
+                            <th>BI</th>
+                            <th>DRL</th>
+                            <th>Adjective Rating (SFDI)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="observed-body">
+                        <tr><td colspan="6" class="error-msg">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-title">
+                <h2>Forecast Fire Danger</h2>
+                <span id="forecast-date" class="date-display">Loading date...</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>FDRA</th>
+                            <th>Fuel Model</th>
+                            <th>Forecast ERC</th>
+                            <th>Forecast BI</th>
+                            <th>Forecast DRL</th>
+                            <th>Adjective Rating (SFDI)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="forecast-body">
+                        <tr><td colspan="6" class="error-msg">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 2: GRAPHS -->
+        <div id="tab-graphs" class="tab-content">
+            
+            <!-- Dynamic Graph Selector -->
+            <div class="controls">
+                <label for="fdra-selector">Select Fire Danger Rating Area (FDRA):</label>
+                <select id="fdra-selector" onchange="updateGraphs()">
+                    <option value="cskt_west">CSKT West</option>
+                    <option value="cskt_east">CSKT East</option>
+                    <option value="lolo_east">Lolo East</option>
+                    <option value="lolo_west">Lolo West</option>
+                    <option value="bitterroot_low">Bitterroot Low</option>
+                    <option value="bitterroot_high">Bitterroot High</option>
+                </select>
+            </div>
+
+            <!-- Dynamic Graph Grid -->
+            <div class="graph-grid">
+                <div class="graph-card">
+                    <h3>Energy Release Component (ERC)</h3>
+                    <!-- Image elements dynamically updated by Javascript -->
+                    <img id="img-erc" src="graphs/cskt_west_erc.png" alt="ERC Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: Check filename';">
+                </div>
+                <div class="graph-card">
+                    <h3>Burning Index (BI)</h3>
+                    <img id="img-bi" src="graphs/cskt_west_bi.png" alt="BI Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: Check filename';">
+                </div>
+                <div class="graph-card">
+                    <h3>100-hr Fuel Moisture</h3>
+                    <img id="img-100" src="graphs/cskt_west_100.png" alt="100-hr FM Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: Check filename';">
+                </div>
+                <div class="graph-card">
+                    <h3>1000-hr Fuel Moisture</h3>
+                    <img id="img-1000" src="graphs/cskt_west_1000.png" alt="1000-hr FM Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: Check filename';">
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>Data provided is for informational purposes only. Consult WIMS or the local dispatch center for official indices.</p>
+    </footer>
+
+    <script>
+        // --- TAB LOGIC ---
+        function openTab(evt, tabId) {
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            const tabBtns = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < tabBtns.length; i++) {
+                tabBtns[i].classList.remove("active");
+            }
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // --- DYNAMIC GRAPHS LOGIC ---
+        function updateGraphs() {
+            const fdra = document.getElementById("fdra-selector").value;
+            // Update the source of the 4 images based on the selected FDRA dropdown value
+            document.getElementById("img-erc").src = `graphs/${fdra}_erc.png`;
+            document.getElementById("img-bi").src = `graphs/${fdra}_bi.png`;
+            document.getElementById("img-100").src = `graphs/${fdra}_100.png`;
+            document.getElementById("img-1000").src = `graphs/${fdra}_1000.png`;
+        }
+
+        // --- DATA TABLE LOGIC ---
+        const OBSERVED_CSV_URL = 'fire_danger_table_today.csv';
+        const FORECAST_CSV_URL = 'fire_danger_table_tomorrow.csv'; 
+
+        function getRatingClass(rating) {
+            if (!rating) return '';
+            switch(rating.toLowerCase().trim()) {
+                case 'l': case 'low': return 'rating-low';
+                case 'm': case 'mod': case 'moderate': return 'rating-mod';
+                case 'h': case 'high': return 'rating-high';
+                case 'vh': case 'very high': return 'rating-vh';
+                case 'e': case 'extreme': return 'rating-ext';
+                default: return '';
+            }
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const currentLine = lines[i].split(',');
+                if (currentLine.length === headers.length) {
+                    const row = {};
+                    for (let j = 0; j < headers.length; j++) {
+                        row[headers[j]] = currentLine[j].trim();
+                    }
+                    data.push(row);
+                }
+            }
+            return data;
+        }
+
+        function populateTable(tableId, dateId, data) {
+            const tbody = document.getElementById(tableId);
+            const dateSpan = document.getElementById(dateId);
+            tbody.innerHTML = ''; 
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="error-msg">No data available in the CSV file.</td></tr>`;
+                dateSpan.textContent = "Date unknown";
+                return;
+            }
+
+            dateSpan.textContent = data[0]['DateTimeStr'] || "Date unknown";
+
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${row['FDRA']}</strong></td>
+                    <td>${row['FuelModel']}</td>
+                    <td>${row['ERC']}</td>
+                    <td>${row['BI']}</td>
+                    <td><span class="rating ${getRatingClass(row['DRLClass'])}">${row['DRLClass']}</span></td>
+                    <td><span class="rating ${getRatingClass(row['SFDItext'])}">${row['SFDItext']}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function fetchAndRenderData(url, tableId, dateId) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`File not found: ${url}`);
+                }
+                const csvText = await response.text();
+                const data = parseCSV(csvText);
+                populateTable(tableId, dateId, data);
+            } catch (error) {
+                console.error("Error loading CSV:", error);
+                document.getElementById(tableId).innerHTML = `<tr><td colspan="6" class="error-msg">Could not load data. Ensure <b>${url}</b> exists and is accessible.</td></tr>`;
+                document.getElementById(dateId).textContent = "Error loading date";
+            }
+        }
+
+        // Initialize Everything
+        window.onload = function() {
+            fetchAndRenderData(OBSERVED_CSV_URL, 'observed-body', 'observed-date');
+            fetchAndRenderData(FORECAST_CSV_URL, 'forecast-body', 'forecast-date');
+            
+            // Explicitly set the initial state for the graphs on page load
+            updateGraphs();
+        };
+    </script>
+</body>
+</html>
