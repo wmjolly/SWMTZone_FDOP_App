@@ -223,3 +223,6 @@ Data/cskte_histfd_Y.csv
 Data/csktw_histfd_Y.csv
 Data/lefdr_histfd_Y.csv
 Data/lwfdr_histfd_Y.csv
+*.png
+Tables/fire_danger_table_today.csv
+Tables/fire_danger_table_tomorrow.csv

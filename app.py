@@ -320,8 +320,8 @@ if __name__ == "__main__":
     units.append({'rt_df':lwfdr_daily_max,'hist_df':df_hist_nfdrs_daily_lwfdra,'sta_list':lwfdr_sta_id,'title':"Lolo West FDRA",'oFileBasePath': "Figures/LoloWestFDRA_",'Percs':{'ERC':lwfdra_erc_percs},'FuelModel':"Y"})
     
     # CSKT East and West
-    units.append({'rt_df':csktefdr_daily_max,'hist_df':df_hist_nfdrs_daily_csktefdra,'sta_list':csktefdr_sta_id,'title':"CSKT East FDRA",'oFileBasePath': "Figures/LoloWestFDRA_",'Percs':{'ERC':csktefdra_erc_percs},'FuelModel':"Y"})
-    units.append({'rt_df':csktwfdr_daily_max,'hist_df':df_hist_nfdrs_daily_csktwfdra,'sta_list':csktwfdr_sta_id,'title':"CSKT West FDRA",'oFileBasePath': "Figures/LoloWestFDRA_",'Percs':{'ERC':csktwfdra_erc_percs},'FuelModel':"Y"})
+    units.append({'rt_df':csktefdr_daily_max,'hist_df':df_hist_nfdrs_daily_csktefdra,'sta_list':csktefdr_sta_id,'title':"CSKT East FDRA",'oFileBasePath': "Figures/CSKTEastFDRA_",'Percs':{'ERC':csktefdra_erc_percs},'FuelModel':"Y"})
+    units.append({'rt_df':csktwfdr_daily_max,'hist_df':df_hist_nfdrs_daily_csktwfdra,'sta_list':csktwfdr_sta_id,'title':"CSKT West FDRA",'oFileBasePath': "Figures/CSKTWestFDRA_",'Percs':{'ERC':csktwfdra_erc_percs},'FuelModel':"Y"})
     
     # Bitterroot High and Low
     units.append({'rt_df':blfdr_daily_max,'hist_df':df_hist_nfdrs_daily_blfdra,'sta_list':blfdr_sta_id,'title':"Bitterroot Low FDRA",'oFileBasePath': "Figures/BRFLowFDRA_",'Percs':{'ERC':blfdra_erc_percs},'FuelModel':"Z"})
