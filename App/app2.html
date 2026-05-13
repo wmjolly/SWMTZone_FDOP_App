@@ -8,6 +8,10 @@
     <!-- Official USDA/USWDS Font -->
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     
+    <!-- Highcharts Libraries -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    
     <style>
         :root {
             --fs-green: #1a5b40;
@@ -71,6 +75,15 @@
         }
 
         .agency-titles .fs-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--fs-green);
+            margin: 0;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+	.agency-titles .wfas-title {
             font-size: 2.2rem;
             font-weight: 700;
             color: var(--fs-green);
@@ -91,6 +104,7 @@
             display: flex;
             list-style: none;
             padding: 0;
+            flex-wrap: wrap;
         }
 
         .nav-item {
@@ -188,7 +202,6 @@
             font-weight: 600;
         }
 
-        /* Standard Outlined Download Button */
         .btn-download {
             display: inline-flex;
             align-items: center;
@@ -256,11 +269,51 @@
             min-width: 80px;
             font-size: 0.95rem;
         }
-        .rating-low { background-color: #2ecc71; color: #111; }
-        .rating-mod { background-color: #3498db; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.4); }
-        .rating-high { background-color: #f1c40f; color: #111; }
-        .rating-vh { background-color: #e67e22; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.4); }
-        .rating-ext { background-color: #e74c3c; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.4); }
+        /* Custom Table colors requested for the App */
+        .rating-low { background-color: #2c7bb6; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.4); } 
+        .rating-mod { background-color: #abd9e9; color: #111; } 
+        .rating-high { background-color: #ffffbf; color: #111; } 
+        .rating-vh { background-color: #fdae61; color: #111; } 
+        .rating-ext { background-color: #d7191c; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.4); } 
+
+        /* --- Indicator Plots (Gauge Charts) --- */
+        .indicator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .indicator-card {
+            background: #ffffff;
+            padding: 25px 20px;
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--fs-green);
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .indicator-title {
+            margin: 0;
+            font-size: 1.4rem;
+            color: var(--text-main);
+        }
+        
+        .indicator-subtitle {
+            margin: 5px 0 10px 0;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+        
+        .indicator-rating {
+            margin-top: auto;
+            width: 100%;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
 
         /* --- Graph Controls --- */
         .controls {
@@ -295,7 +348,6 @@
             background-size: 12px auto;
         }
 
-        /* --- Graph Grid --- */
         .graph-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
@@ -368,41 +420,25 @@
             margin-top: 10px;
         }
 
-        /* Responsive Details */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.2rem; }
             .hero p { font-size: 1.1rem; }
             .controls { flex-direction: column; align-items: stretch; }
             .footer-inner { flex-direction: column; text-align: center; }
-            
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            .header-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .header-actions { width: 100%; justify-content: space-between; }
         }
     </style>
 </head>
 <body>
-
-    <!-- Small Gov Banner -->
-    <div class="usa-banner">
-        <div class="usa-banner-inner">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e6/Flag_of_the_United_States_of_America_%283-2%29.svg" alt="US flag">
-            <span>An official website of the United States government</span>
-        </div>
-    </div>
-
+    
     <!-- Agency Header -->
     <header class="site-header">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/e/ee/US_Forest_Service_logo.svg" alt="U.S. Forest Service Shield" class="agency-logo">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Logo_of_the_United_States_Forest_Service.svg/250px-Logo_of_the_United_States_Forest_Service.svg.png" alt="U.S. Forest Service Shield" class="agency-logo">
         <div class="agency-titles">
-            <h2 class="usda-title">U.S. Department of Agriculture</h2>
-            <h1 class="fs-title">Forest Service</h1>
+            <h3 class="usda-title">U.S. Department of Agriculture</h3>
+            <h2 class="fs-title">Forest Service</h2>
+	    <h1 class="wfas-title">Wildland Fire Assessment System (WFAS)</h1>
         </div>
     </header>
 
@@ -410,6 +446,7 @@
     <nav class="primary-nav">
         <ul class="nav-list">
             <li><button class="nav-item active" onclick="openTab(event, 'tab-tables')">Data Tables</button></li>
+            <li><button class="nav-item" onclick="openTab(event, 'tab-indicators')">Indicators</button></li>
             <li><button class="nav-item" onclick="openTab(event, 'tab-graphs')">Station Graphs</button></li>
         </ul>
     </nav>
@@ -424,46 +461,38 @@
         <!-- TAB 1: DATA TABLES -->
         <div id="tab-tables" class="tab-content active">
             
-            <!-- Observed Table Wrapper -->
             <div class="table-wrapper">
                 <div class="section-header">
                     <h2>Observed Fire Danger</h2>
                     <div class="header-actions">
                         <span id="observed-date" class="date-display">Loading date...</span>
                         <a href="fire_danger_table_today.csv" download="Observed_Fire_Danger.csv" class="btn-download">
-                            <!-- Download Icon (SVG) -->
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                             Download CSV
                         </a>
                     </div>
                 </div>
                 <table>
-                    <thead id="observed-head">
-                        <!-- Headers generated by Javascript -->
-                    </thead>
+                    <thead id="observed-head"></thead>
                     <tbody id="observed-body">
                         <tr><td class="error-msg">Loading data...</td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Forecast Table Wrapper -->
             <div class="table-wrapper">
                 <div class="section-header">
                     <h2>Forecast Fire Danger</h2>
                     <div class="header-actions">
                         <span id="forecast-date" class="date-display">Loading date...</span>
                         <a href="fire_danger_table_tomorrow.csv" download="Forecast_Fire_Danger.csv" class="btn-download">
-                            <!-- Download Icon (SVG) -->
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                             Download CSV
                         </a>
                     </div>
                 </div>
                 <table>
-                    <thead id="forecast-head">
-                        <!-- Headers generated by Javascript -->
-                    </thead>
+                    <thead id="forecast-head"></thead>
                     <tbody id="forecast-body">
                         <tr><td class="error-msg">Loading data...</td></tr>
                     </tbody>
@@ -472,37 +501,50 @@
             
         </div>
 
-        <!-- TAB 2: GRAPHS -->
+        <!-- TAB 2: INDICATORS -->
+        <div id="tab-indicators" class="tab-content">
+            <div class="section-header">
+                <h2>Observed ERC Indicators</h2>
+                <span id="indicator-date" class="date-display">Loading date...</span>
+            </div>
+            
+            <!-- Highcharts Gauges will be injected here by Javascript -->
+            <div id="indicator-grid" class="indicator-grid">
+                <div class="error-msg" style="grid-column: 1 / -1;">Loading indicators...</div>
+            </div>
+        </div>
+
+        <!-- TAB 3: GRAPHS -->
         <div id="tab-graphs" class="tab-content">
             
             <div class="controls">
                 <label for="fdra-selector">Select Fire Danger Rating Area (FDRA):</label>
                 <select id="fdra-selector" onchange="updateGraphs()">
-                    <option value="cskt_west">CSKT West</option>
-                    <option value="cskt_east">CSKT East</option>
-                    <option value="lolo_east">Lolo East</option>
-                    <option value="lolo_west">Lolo West</option>
-                    <option value="bitterroot_low">Bitterroot Low</option>
-                    <option value="bitterroot_high">Bitterroot High</option>
+                    <option value="CSKTWestFDRA">CSKT West</option>
+                    <option value="CSKTEastFDRA">CSKT East</option>
+                    <option value="LoloEastFDRA">Lolo East</option>
+                    <option value="LoloWestFDRA">Lolo West</option>
+                    <option value="BRFLowFDRA">Bitterroot Low</option>
+                    <option value="BRFHighFDRA">Bitterroot High</option>
                 </select>
             </div>
 
             <div class="graph-grid">
                 <div class="graph-card">
                     <h3>Energy Release Component (ERC)</h3>
-                    <img id="img-erc" src="graphs/cskt_west_erc.png" alt="ERC Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
+                    <img id="img-erc" src="Figures/LoloEastFDRA_ERC_current.png" alt="ERC Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
                 </div>
                 <div class="graph-card">
                     <h3>Burning Index (BI)</h3>
-                    <img id="img-bi" src="graphs/cskt_west_bi.png" alt="BI Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
+                    <img id="img-bi" src="Figures/LoloEastFDRA_BI_current.png" alt="BI Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
                 </div>
                 <div class="graph-card">
                     <h3>100-hr Fuel Moisture</h3>
-                    <img id="img-100" src="graphs/cskt_west_100.png" alt="100-hr FM Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
+                    <img id="img-100" src="Figures/LoloEastFDRA_MC100_current.png" alt="100-hr FM Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
                 </div>
                 <div class="graph-card">
                     <h3>1000-hr Fuel Moisture</h3>
-                    <img id="img-1000" src="graphs/cskt_west_1000.png" alt="1000-hr FM Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
+                    <img id="img-1000" src="Figures/LoloEastFDRA_MC1000_current.png" alt="1000-hr FM Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
                 </div>
             </div>
 
@@ -511,17 +553,32 @@
 
     <footer>
         <div class="footer-inner">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ee/US_Forest_Service_logo.svg" alt="USFS Logo" class="footer-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Logo_of_the_United_States_Forest_Service.svg/250px-Logo_of_the_United_States_Forest_Service.svg.png" alt="USFS Logo" class="footer-logo">
             <div class="footer-text">
                 <p><strong>Forest Service</strong></p>
                 <p>U.S. Department of Agriculture</p>
-                <p class="disclaimer">Data provided is for informational purposes only. Consult WIMS or the local dispatch center for official indices.</p>
+                <p class="disclaimer">Data provided is for informational purposes only. Consult FEMS or the local dispatch center for official indices.</p>
+		<p class="disclaimer">FEMS: https://fems.fs2c.usda.gov/.</p>
+
                 <p class="disclaimer">USDA is an equal opportunity provider, employer, and lender.</p>
             </div>
         </div>
     </footer>
 
     <script>
+        // =========================================================================
+        // CONFIGURATION: SET YOUR 4 ERC BREAKPOINTS FOR EACH FDRA HERE
+        // Format: [Mod_Start, High_Start, VeryHigh_Start, Extreme_Start]
+        // =========================================================================
+        const ERC_BREAKPOINTS = {
+            "CSKT West": [18,30,41,48],
+            "CSKT East": [14,27,36,42],
+            "Lolo East": [20,30,43,49],
+            "Lolo West": [14,30,44,51],
+            "Bitterroot Low": [40,77,94,105],
+            "Bitterroot High": [15,33,45,52]
+        };
+
         // --- TAB LOGIC ---
         function openTab(evt, tabId) {
             const tabContents = document.getElementsByClassName("tab-content");
@@ -539,18 +596,17 @@
         // --- DYNAMIC GRAPHS LOGIC ---
         function updateGraphs() {
             const fdra = document.getElementById("fdra-selector").value;
-            document.getElementById("img-erc").src = `graphs/${fdra}_erc.png`;
-            document.getElementById("img-bi").src = `graphs/${fdra}_bi.png`;
-            document.getElementById("img-100").src = `graphs/${fdra}_100.png`;
-            document.getElementById("img-1000").src = `graphs/${fdra}_1000.png`;
+            document.getElementById("img-erc").src = `Figures/${fdra}_ERC_current.png`;
+            document.getElementById("img-bi").src = `Figures/${fdra}_BI_current.png`;
+            document.getElementById("img-100").src = `Figures/${fdra}_MC100_current.png`;
+            document.getElementById("img-1000").src = `Figures/${fdra}_MC1000_current.png`;
         }
 
-        // --- DATA TABLE LOGIC ---
-        const OBSERVED_CSV_URL = 'fire_danger_table_today.csv';
-        const FORECAST_CSV_URL = 'fire_danger_table_tomorrow.csv'; 
+        // --- DATA & PARSING LOGIC ---
+        const OBSERVED_CSV_URL = 'Tables/fire_danger_table_today.csv';
+        const FORECAST_CSV_URL = 'Tables/fire_danger_table_tomorrow.csv'; 
 
-        // Columns that should be color-coded based on their Adjective rating
-        const COLOR_COLUMNS = ['ERCtext', 'BItext', 'DRLClass', 'SFDItext'];
+        const COLOR_COLUMNS = ['ERC Class', 'BI Class', 'Dispatch RL', 'SFDI'];
 
         function getRatingClass(rating) {
             if (!rating) return '';
@@ -567,7 +623,7 @@
         function parseCSV(csvText) {
             const lines = csvText.trim().split('\n');
             const headers = lines[0].split(',').map(h => h.trim());
-            const data = [];
+            const data =[];
 
             for (let i = 1; i < lines.length; i++) {
                 const currentLine = lines[i].split(',');
@@ -582,7 +638,7 @@
             return data;
         }
 
-        // Dynamically populates the table head and body based on CSV headers
+        // --- RENDER TABLE ---
         function populateTable(headId, bodyId, dateId, data) {
             const thead = document.getElementById(headId);
             const tbody = document.getElementById(bodyId);
@@ -597,14 +653,10 @@
                 return;
             }
 
-            // Set Header Date
             dateSpan.textContent = data[0]['DateTimeStr'] || "Date unknown";
-
-            // Extract Headers from first row
             const headers = Object.keys(data[0]);
-
-            // Build Table Header (<thead>)
             const trHead = document.createElement('tr');
+            
             headers.forEach(header => {
                 const th = document.createElement('th');
                 th.textContent = header === '' ? 'Row' : header;
@@ -612,23 +664,17 @@
             });
             thead.appendChild(trHead);
 
-            // Build Table Body (<tbody>)
             data.forEach(row => {
                 const tr = document.createElement('tr');
                 headers.forEach(header => {
                     const td = document.createElement('td');
                     const cellValue = row[header];
 
-                    // Bold the FDRA column to make it stand out
                     if (header === 'FDRA') {
                         td.innerHTML = `<strong>${cellValue}</strong>`;
-                    } 
-                    // Apply Adjective color classes if column is in the color list
-                    else if (COLOR_COLUMNS.includes(header)) {
+                    } else if (COLOR_COLUMNS.includes(header)) {
                         td.innerHTML = `<span class="rating ${getRatingClass(cellValue)}">${cellValue}</span>`;
-                    } 
-                    // Regular text for all other columns
-                    else {
+                    } else {
                         td.textContent = cellValue;
                     }
                     tr.appendChild(td);
@@ -637,25 +683,149 @@
             });
         }
 
-        async function fetchAndRenderData(url, headId, bodyId, dateId) {
+        // --- RENDER HIGHCHARTS GAUGES ---
+        function renderIndicators(data) {
+            const grid = document.getElementById('indicator-grid');
+            const dateSpan = document.getElementById('indicator-date');
+            grid.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                grid.innerHTML = '<div class="error-msg" style="grid-column: 1/-1;">No data available for indicators.</div>';
+                return;
+            }
+
+            dateSpan.textContent = data[0]['DateTimeStr'] || "Date unknown";
+
+            data.forEach((row, index) => {
+                const fdra = row['FDRA'] || 'Unknown FDRA';
+                const erc = parseFloat(row['ERC']) || 0;
+                
+                // Fetch user breakpoints or fallback to default
+                const bp = ERC_BREAKPOINTS[fdra] || [20, 40, 60, 80];
+                
+                // Max value slightly above Extreme threshold to keep gauge looking clean
+                const maxVal = Math.ceil(bp[3] * 1.25);
+
+                const containerId = 'hc-gauge-' + index;
+                const card = document.createElement('div');
+                card.className = 'indicator-card';
+
+                const ratingText = row['ERCtext'] || row['SFDItext'] || '';
+                const colorClass = getRatingClass(ratingText);
+
+                // Build HTML Frame for the Highcharts Gauge
+                card.innerHTML = `
+                    <h3 class="indicator-title">${fdra}</h3>
+                    <p class="indicator-subtitle">Energy Release Component</p>
+                    
+                    <!-- Highcharts will target this container -->
+                    <div id="${containerId}" style="width: 100%; height: 230px; margin: 0 auto;"></div>
+                    
+                    <div class="indicator-rating">
+                        <span class="rating ${colorClass}">${ratingText}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+
+                // Initialize Highcharts
+                Highcharts.chart(containerId, {
+                    chart: {
+                        type: 'gauge',
+        		plotBackgroundColor: null,
+        		plotBackgroundImage: null,
+        		plotBorderWidth: 0,
+        		plotShadow: false
+                    },
+                    title: { text: null },
+                    pane: {
+                        startAngle: -90,
+        		endAngle: 89.9,
+        		background: null,
+        		center: ['50%', '75%'],
+        		size: '110%'
+                    },
+                    tooltip: { enabled: false }, // Disable hovering over needle
+                    yAxis: {
+                        min: 0,
+                        max: maxVal,
+                        tickPixelInterval: 50,
+                        tickPosition: 'outside',
+                        tickColor: '#333',
+                        tickLength: 8,
+                        tickWidth: 2,
+                        minorTickInterval: null,
+			tickPositions: bp, 	
+                        labels: {
+                            distance: 12,
+                            style: { fontSize: '11px', color: '#1b1b1b', fontWeight: 'bold' }
+                        },
+                        // The custom 5 colors and breakpoints you provided
+                        plotBands: [
+                            { from: 0,     to: bp[0],  color: '#2c7bb6' }, // Low
+                            { from: bp[0], to: bp[1],  color: '#abd9e9' }, // Mod
+                            { from: bp[1], to: bp[2],  color: '#ffffbf' }, // High
+                            { from: bp[2], to: bp[3],  color: '#fdae61' }, // VH
+                            { from: bp[3], to: maxVal, color: '#d7191c' }  // Extreme
+                        ]
+                    },
+                    series: [{
+                        name: 'ERC',
+                        data: [erc],
+                        dataLabels: {
+                            format: '{y}',
+                            borderWidth: 0,
+                            color: 'var(--text-main)',
+                            style: { 
+                                fontSize: '16px'
+                            },
+                            y: 40, // Drop label below the pivot point
+			    align: 'center',
+			    verticalAlign: 'bottom'
+                        },
+                        dial: {
+                            radius: '80%',
+                            backgroundColor: '#333',
+                            baseWidth: 10,
+                            topWidth: 1,
+                            baseLength: '0%',
+                            rearLength: '0%'
+                        },
+                        pivot: {
+                            backgroundColor: '#333',
+                            radius: 6
+                        }
+                    }],
+                    credits: { enabled: false }
+                });
+            });
+        }
+
+        // --- FETCH TRIGGER ---
+        async function fetchAndRenderData(url, headId, bodyId, dateId, callback = null) {
             try {
                 const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`File not found: ${url}`);
-                }
+                if (!response.ok) throw new Error(`File not found: ${url}`);
+                
                 const csvText = await response.text();
                 const data = parseCSV(csvText);
+                
                 populateTable(headId, bodyId, dateId, data);
+                
+                if (callback) {
+                    setTimeout(() => callback(data), 50); 
+                }
             } catch (error) {
                 console.error("Error loading CSV:", error);
-                document.getElementById(bodyId).innerHTML = `<tr><td class="error-msg">Could not load <b>${url}</b>. File missing or you are not running a local web server.</td></tr>`;
+                document.getElementById(bodyId).innerHTML = `<tr><td class="error-msg">Could not load <b>${url}</b>. Ensure you are running a local web server.</td></tr>`;
                 document.getElementById(dateId).textContent = "";
             }
         }
 
         // Initialize App
         window.onload = function() {
-            fetchAndRenderData(OBSERVED_CSV_URL, 'observed-head', 'observed-body', 'observed-date');
+            // Fetch Observed and run the renderIndicators callback to draw Highcharts
+            fetchAndRenderData(OBSERVED_CSV_URL, 'observed-head', 'observed-body', 'observed-date', renderIndicators);
+            // Fetch Forecast
             fetchAndRenderData(FORECAST_CSV_URL, 'forecast-head', 'forecast-body', 'forecast-date');
             
             updateGraphs(); 
