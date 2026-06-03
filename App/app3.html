@@ -1,0 +1,836 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SW Montana Zone Fire Danger | U.S. Forest Service</title>
+    
+    <!-- Official USDA/USWDS Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Highcharts Libraries -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    
+    <style>
+        :root {
+            --fs-green: #1a5b40;
+            --fs-green-hover: #113d2a;
+            --text-main: #1b1b1b;
+            --text-light: #565c65;
+            --bg-page: #ffffff;
+            --bg-gray: #f4f4f4;
+            --border-color: #dfe1e2;
+            --focus-blue: #2491ff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        /* --- Standard USWDS Gov Banner --- */
+        .usa-banner {
+            background-color: #f0f0f0;
+            font-size: 0.85rem;
+            padding: 4px 20px;
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .usa-banner-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; }
+        .usa-banner img { width: 16px; margin-right: 8px; }
+
+        /* --- Official Site Header --- */
+        .site-header {
+            background-color: #ffffff;
+            padding: 25px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .agency-logo {
+            height: 75px;
+            margin-right: 20px;
+        }
+
+        .agency-titles {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .agency-titles .usda-title {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: var(--text-main);
+            margin: 0 0 2px 0;
+        }
+
+        .agency-titles .fs-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--fs-green);
+            margin: 0;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+	.agency-titles .wfas-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--fs-green);
+            margin: 0;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+        /* --- Primary Navigation (Acts as Tabs) --- */
+        .primary-nav {
+            background-color: var(--fs-green);
+            padding: 0 20px;
+        }
+
+        .nav-list {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            list-style: none;
+            padding: 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: 600;
+            padding: 16px 24px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s;
+            border-bottom: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: var(--fs-green-hover);
+        }
+
+        .nav-item.active {
+            border-bottom: 4px solid #ffffff;
+            background-color: var(--fs-green-hover);
+        }
+
+        /* --- Hero Image Section --- */
+        .hero {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            color: #ffffff;
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--fs-green);
+        }
+
+        .hero h1 {
+            margin: 0 0 15px 0;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 400;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* --- Main Layout & Tabs --- */
+        main {
+            max-width: 1300px;
+            margin: 40px auto;
+            padding: 0 20px;
+            min-height: 50vh;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Section Titles & Actions --- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin: 0 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--fs-green);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .date-display {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--fs-green);
+            background-color: var(--bg-page);
+            border: 2px solid var(--fs-green);
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-download:hover {
+            background-color: var(--fs-green);
+            color: #ffffff;
+        }
+
+        .btn-download svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            fill: currentColor;
+        }
+
+        /* --- Tables --- */
+        .table-wrapper {
+            margin-bottom: 50px;
+            overflow-x: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            border-top: 2px solid var(--text-main);
+            border-bottom: 2px solid var(--text-main);
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--bg-page);
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        tr:nth-child(even) { background-color: var(--bg-gray); }
+        tr:hover { background-color: #eef1f2; }
+
+        /* NWCG Fire Danger Colors - Standard colors */
+        .rating {
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 4px;
+            display: inline-block;
+            text-align: center;
+            min-width: 80px;
+            font-size: 0.95rem;
+        }
+        /* Custom Table colors requested for the App */
+        .rating-low { background-color: #2c7bb6; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.4); } 
+        .rating-mod { background-color: #abd9e9; color: #111; } 
+        .rating-high { background-color: #ffffbf; color: #111; } 
+        .rating-vh { background-color: #fdae61; color: #111; } 
+        .rating-ext { background-color: #d7191c; color: white; text-shadow: 1px 1px 1px rgba(0,0,0,0.4); } 
+
+        /* --- Indicator Plots (Gauge Charts) --- */
+        .indicator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .indicator-card {
+            background: #ffffff;
+            padding: 25px 20px;
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--fs-green);
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .indicator-title {
+            margin: 0;
+            font-size: 1.4rem;
+            color: var(--text-main);
+        }
+        
+        .indicator-subtitle {
+            margin: 5px 0 10px 0;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+        
+        .indicator-rating {
+            margin-top: auto;
+            width: 100%;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        /* --- Graph Controls --- */
+        .controls {
+            background: var(--bg-gray);
+            padding: 25px;
+            border-radius: 0;
+            border-left: 6px solid var(--fs-green);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .controls label {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        .controls select {
+            padding: 12px 40px 12px 15px;
+            font-size: 1.05rem;
+            border: 1px solid #757575;
+            background-color: #ffffff;
+            cursor: pointer;
+            font-family: inherit;
+            color: var(--text-main);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231b1b1b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px auto;
+        }
+
+        .graph-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+        }
+
+        .graph-card {
+            background: #ffffff;
+            padding: 0;
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--fs-green);
+        }
+
+        .graph-card h3 {
+            margin: 0;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            color: var(--text-main);
+            background-color: var(--bg-gray);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .graph-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            min-height: 300px;
+            object-fit: contain;
+            background-color: #fafafa;
+        }
+
+        .error-msg {
+            padding: 20px;
+            color: #d32f2f;
+            text-align: left;
+            font-weight: 600;
+            background-color: #fce4e4;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background-color: var(--bg-gray);
+            border-top: 1px solid var(--border-color);
+            padding: 40px 20px;
+            margin-top: 40px;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            height: 60px;
+            opacity: 0.8;
+        }
+
+        .footer-text p {
+            margin: 0 0 5px 0;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .footer-text p.disclaimer {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { font-size: 1.1rem; }
+            .controls { flex-direction: column; align-items: stretch; }
+            .footer-inner { flex-direction: column; text-align: center; }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .header-actions { width: 100%; justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Agency Header -->
+    <header class="site-header">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Logo_of_the_United_States_Forest_Service.svg/250px-Logo_of_the_United_States_Forest_Service.svg.png" alt="U.S. Forest Service Shield" class="agency-logo">
+        <div class="agency-titles">
+            <h3 class="usda-title">U.S. Department of Agriculture</h3>
+            <h2 class="fs-title">Forest Service</h2>
+	    <h1 class="wfas-title">Wildland Fire Assessment System (WFAS)</h1>
+        </div>
+    </header>
+
+    <!-- Primary Navigation / Tab System -->
+    <nav class="primary-nav">
+        <ul class="nav-list">
+            <li><button class="nav-item active" onclick="openTab(event, 'tab-tables')">Data Tables</button></li>
+            <li><button class="nav-item" onclick="openTab(event, 'tab-indicators')">Indicators</button></li>
+            <li><button class="nav-item" onclick="openTab(event, 'tab-graphs')">Station Graphs</button></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Banner -->
+    <div class="hero">
+        <h1>Northern Rockies Southwest Montana Zone</h1>
+        <p>Interagency Fire Danger Operating Plan (FDOP) Dashboard</p>
+    </div>
+
+    <main>
+        <!-- TAB 1: DATA TABLES -->
+        <div id="tab-tables" class="tab-content active">
+            
+            <div class="table-wrapper">
+                <div class="section-header">
+                    <h2>Observed Fire Danger</h2>
+                    <div class="header-actions">
+                        <span id="observed-date" class="date-display">Loading date...</span>
+                        <a href="fire_danger_table_today.csv" download="Observed_Fire_Danger.csv" class="btn-download">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            Download CSV
+                        </a>
+                    </div>
+                </div>
+                <table>
+                    <thead id="observed-head"></thead>
+                    <tbody id="observed-body">
+                        <tr><td class="error-msg">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-wrapper">
+                <div class="section-header">
+                    <h2>Forecast Fire Danger</h2>
+                    <div class="header-actions">
+                        <span id="forecast-date" class="date-display">Loading date...</span>
+                        <a href="fire_danger_table_tomorrow.csv" download="Forecast_Fire_Danger.csv" class="btn-download">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            Download CSV
+                        </a>
+                    </div>
+                </div>
+                <table>
+                    <thead id="forecast-head"></thead>
+                    <tbody id="forecast-body">
+                        <tr><td class="error-msg">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+
+        <!-- TAB 2: INDICATORS -->
+        <div id="tab-indicators" class="tab-content">
+            <div class="section-header">
+                <h2>Observed ERC Indicators</h2>
+                <span id="indicator-date" class="date-display">Loading date...</span>
+            </div>
+            
+            <!-- Highcharts Gauges will be injected here by Javascript -->
+            <div id="indicator-grid" class="indicator-grid">
+                <div class="error-msg" style="grid-column: 1 / -1;">Loading indicators...</div>
+            </div>
+        </div>
+
+        <!-- TAB 3: GRAPHS -->
+        <div id="tab-graphs" class="tab-content">
+            
+            <div class="controls">
+                <label for="fdra-selector">Select Fire Danger Rating Area (FDRA):</label>
+                <select id="fdra-selector" onchange="updateGraphs()">
+                    <option value="CSKTWestFDRA">CSKT West</option>
+                    <option value="CSKTEastFDRA">CSKT East</option>
+                    <option value="LoloEastFDRA">Lolo East</option>
+                    <option value="LoloWestFDRA">Lolo West</option>
+                    <option value="BRFLowFDRA">Bitterroot Low</option>
+                    <option value="BRFHighFDRA">Bitterroot High</option>
+                </select>
+            </div>
+
+            <div class="graph-grid">
+                <div class="graph-card">
+                    <h3>Energy Release Component (ERC)</h3>
+                    <img id="img-erc" src="Figures/LoloEastFDRA_ERC_current.png" alt="ERC Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
+                </div>
+                <div class="graph-card">
+                    <h3>Burning Index (BI)</h3>
+                    <img id="img-bi" src="Figures/LoloEastFDRA_BI_current.png" alt="BI Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
+                </div>
+                <div class="graph-card">
+                    <h3>100-hr Fuel Moisture</h3>
+                    <img id="img-100" src="Figures/LoloEastFDRA_MC100_current.png" alt="100-hr FM Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
+                </div>
+                <div class="graph-card">
+                    <h3>1000-hr Fuel Moisture</h3>
+                    <img id="img-1000" src="Figures/LoloEastFDRA_MC1000_current.png" alt="1000-hr FM Graph" onerror="this.onerror=null; this.src=''; this.alt='Image not found: check filename';">
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Logo_of_the_United_States_Forest_Service.svg/250px-Logo_of_the_United_States_Forest_Service.svg.png" alt="USFS Logo" class="footer-logo">
+            <div class="footer-text">
+                <p><strong>Forest Service</strong></p>
+                <p>U.S. Department of Agriculture</p>
+                <p class="disclaimer">Data provided is for informational purposes only. Consult FEMS or the local dispatch center for official indices.</p>
+		<p class="disclaimer">FEMS: https://fems.fs2c.usda.gov/.</p>
+
+                <p class="disclaimer">USDA is an equal opportunity provider, employer, and lender.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // =========================================================================
+        // CONFIGURATION: SET YOUR 4 ERC BREAKPOINTS FOR EACH FDRA HERE
+        // Format: [Mod_Start, High_Start, VeryHigh_Start, Extreme_Start]
+        // =========================================================================
+        const ERC_BREAKPOINTS = {
+            "CSKT West": [18,30,41,48],
+            "CSKT East": [14,27,36,42],
+            "Lolo East": [20,30,43,49],
+            "Lolo West": [14,30,44,51],
+            "Bitterroot Low": [40,77,94,105],
+            "Bitterroot High": [15,33,45,52]
+        };
+
+        // --- TAB LOGIC ---
+        function openTab(evt, tabId) {
+            const tabContents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            const navItems = document.getElementsByClassName("nav-item");
+            for (let i = 0; i < navItems.length; i++) {
+                navItems[i].classList.remove("active");
+            }
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // --- DYNAMIC GRAPHS LOGIC ---
+        function updateGraphs() {
+            const fdra = document.getElementById("fdra-selector").value;
+            document.getElementById("img-erc").src = `Figures/${fdra}_ERC_current.png`;
+            document.getElementById("img-bi").src = `Figures/${fdra}_BI_current.png`;
+            document.getElementById("img-100").src = `Figures/${fdra}_MC100_current.png`;
+            document.getElementById("img-1000").src = `Figures/${fdra}_MC1000_current.png`;
+        }
+
+        // --- DATA & PARSING LOGIC ---
+        const OBSERVED_CSV_URL = 'Tables/fire_danger_table_today.csv';
+        const FORECAST_CSV_URL = 'Tables/fire_danger_table_tomorrow.csv'; 
+
+        const COLOR_COLUMNS = ['ERC Class', 'BI Class', 'Dispatch RL', 'SFDI'];
+
+        function getRatingClass(rating) {
+            if (!rating) return '';
+            switch(rating.toLowerCase().trim()) {
+                case 'l': case 'low': return 'rating-low';
+                case 'm': case 'mod': case 'moderate': return 'rating-mod';
+                case 'h': case 'high': return 'rating-high';
+                case 'vh': case 'very high': return 'rating-vh';
+                case 'e': case 'extreme': return 'rating-ext';
+                default: return '';
+            }
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            const data =[];
+
+            for (let i = 1; i < lines.length; i++) {
+                const currentLine = lines[i].split(',');
+                if (currentLine.length === headers.length) {
+                    const row = {};
+                    for (let j = 0; j < headers.length; j++) {
+                        row[headers[j]] = currentLine[j].trim();
+                    }
+                    data.push(row);
+                }
+            }
+            return data;
+        }
+
+        // --- RENDER TABLE ---
+        function populateTable(headId, bodyId, dateId, data) {
+            const thead = document.getElementById(headId);
+            const tbody = document.getElementById(bodyId);
+            const dateSpan = document.getElementById(dateId);
+            
+            thead.innerHTML = ''; 
+            tbody.innerHTML = ''; 
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td class="error-msg">No data available in the CSV file.</td></tr>`;
+                dateSpan.textContent = "Date unknown";
+                return;
+            }
+
+            dateSpan.textContent = data[0]['Date'] || "Date unknown";
+            const headers = Object.keys(data[0]);
+            const trHead = document.createElement('tr');
+            
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header === '' ? 'Row' : header;
+                trHead.appendChild(th);
+            });
+            thead.appendChild(trHead);
+
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    const cellValue = row[header];
+
+                    if (header === 'FDRA') {
+                        td.innerHTML = `<strong>${cellValue}</strong>`;
+                    } else if (COLOR_COLUMNS.includes(header)) {
+                        td.innerHTML = `<span class="rating ${getRatingClass(cellValue)}">${cellValue}</span>`;
+                    } else {
+                        td.textContent = cellValue;
+                    }
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- RENDER HIGHCHARTS GAUGES ---
+        function renderIndicators(data) {
+            const grid = document.getElementById('indicator-grid');
+            const dateSpan = document.getElementById('indicator-date');
+            grid.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                grid.innerHTML = '<div class="error-msg" style="grid-column: 1/-1;">No data available for indicators.</div>';
+                return;
+            }
+
+            dateSpan.textContent = data[0]['DateTimeStr'] || "Date unknown";
+
+            data.forEach((row, index) => {
+                const fdra = row['FDRA'] || 'Unknown FDRA';
+                const erc = parseFloat(row['ERC']) || 0;
+                
+                // Fetch user breakpoints or fallback to default
+                const bp = ERC_BREAKPOINTS[fdra] || [20, 40, 60, 80];
+                
+                // Max value slightly above Extreme threshold to keep gauge looking clean
+                const maxVal = Math.ceil(bp[3] * 1.25);
+
+                const containerId = 'hc-gauge-' + index;
+                const card = document.createElement('div');
+                card.className = 'indicator-card';
+
+                const ratingText = row['ERCtext'] || row['SFDItext'] || '';
+                const colorClass = getRatingClass(ratingText);
+
+                // Build HTML Frame for the Highcharts Gauge
+                card.innerHTML = `
+                    <h3 class="indicator-title">${fdra}</h3>
+                    <p class="indicator-subtitle">Energy Release Component</p>
+                    
+                    <!-- Highcharts will target this container -->
+                    <div id="${containerId}" style="width: 100%; height: 230px; margin: 0 auto;"></div>
+                    
+                    <div class="indicator-rating">
+                        <span class="rating ${colorClass}">${ratingText}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+
+                // Initialize Highcharts
+                Highcharts.chart(containerId, {
+                    chart: {
+                        type: 'gauge',
+        		plotBackgroundColor: null,
+        		plotBackgroundImage: null,
+        		plotBorderWidth: 0,
+        		plotShadow: false
+                    },
+                    title: { text: null },
+                    pane: {
+                        startAngle: -90,
+        		endAngle: 89.9,
+        		background: null,
+        		center: ['50%', '75%'],
+        		size: '110%'
+                    },
+                    tooltip: { enabled: false }, // Disable hovering over needle
+                    yAxis: {
+                        min: 0,
+                        max: maxVal,
+                        tickPixelInterval: 50,
+                        tickPosition: 'outside',
+                        tickColor: '#333',
+                        tickLength: 8,
+                        tickWidth: 2,
+                        minorTickInterval: null,
+			tickPositions: bp, 	
+                        labels: {
+                            distance: 12,
+                            style: { fontSize: '11px', color: '#1b1b1b', fontWeight: 'bold' }
+                        },
+                        // The custom 5 colors and breakpoints you provided
+                        plotBands: [
+                            { from: 0,     to: bp[0],  color: '#2c7bb6' }, // Low
+                            { from: bp[0], to: bp[1],  color: '#abd9e9' }, // Mod
+                            { from: bp[1], to: bp[2],  color: '#ffffbf' }, // High
+                            { from: bp[2], to: bp[3],  color: '#fdae61' }, // VH
+                            { from: bp[3], to: maxVal, color: '#d7191c' }  // Extreme
+                        ]
+                    },
+                    series: [{
+                        name: 'ERC',
+                        data: [erc],
+                        dataLabels: {
+                            format: '{y}',
+                            borderWidth: 0,
+                            color: 'var(--text-main)',
+                            style: { 
+                                fontSize: '16px'
+                            },
+                            y: 40, // Drop label below the pivot point
+			    align: 'center',
+			    verticalAlign: 'bottom'
+                        },
+                        dial: {
+                            radius: '80%',
+                            backgroundColor: '#333',
+                            baseWidth: 10,
+                            topWidth: 1,
+                            baseLength: '0%',
+                            rearLength: '0%'
+                        },
+                        pivot: {
+                            backgroundColor: '#333',
+                            radius: 6
+                        }
+                    }],
+                    credits: { enabled: false }
+                });
+            });
+        }
+
+        // --- FETCH TRIGGER ---
+        async function fetchAndRenderData(url, headId, bodyId, dateId, callback = null) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`File not found: ${url}`);
+                
+                const csvText = await response.text();
+                const data = parseCSV(csvText);
+                
+                populateTable(headId, bodyId, dateId, data);
+                
+                if (callback) {
+                    setTimeout(() => callback(data), 50); 
+                }
+            } catch (error) {
+                console.error("Error loading CSV:", error);
+                document.getElementById(bodyId).innerHTML = `<tr><td class="error-msg">Could not load <b>${url}</b>. Ensure you are running a local web server.</td></tr>`;
+                document.getElementById(dateId).textContent = "";
+            }
+        }
+
+        // Initialize App
+        window.onload = function() {
+            // Fetch Observed and run the renderIndicators callback to draw Highcharts
+            fetchAndRenderData(OBSERVED_CSV_URL, 'observed-head', 'observed-body', 'observed-date', renderIndicators);
+            // Fetch Forecast
+            fetchAndRenderData(FORECAST_CSV_URL, 'forecast-head', 'forecast-body', 'forecast-date');
+            
+            updateGraphs(); 
+        };
+    </script>
+</body>
+</html>
