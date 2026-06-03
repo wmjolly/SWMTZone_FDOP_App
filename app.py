@@ -251,12 +251,12 @@ if __name__ == "__main__":
     bhfdr_daily_max ['BIClass'] = bhfdr_daily_max .apply(lambda row: LookupClass(row['BI'],bhfdra_bi_percs), axis=1)
     
     # Calculate the ERC class from ERC and the ERC perc table
-    lefdr_daily_max['ERCClass'] = lefdr_daily_max.apply(lambda row: LookupClass(row['ERC'],lefdra_bi_percs), axis=1)
-    lwfdr_daily_max['ERCClass'] = lwfdr_daily_max.apply(lambda row: LookupClass(row['ERC'],lwfdra_bi_percs), axis=1)
-    csktefdr_daily_max['ERCClass'] = csktefdr_daily_max.apply(lambda row: LookupClass(row['ERC'],csktefdra_bi_percs), axis=1)
-    csktwfdr_daily_max['ERCClass'] =csktwfdr_daily_max.apply(lambda row: LookupClass(row['ERC'],csktwfdra_bi_percs), axis=1)
-    blfdr_daily_max['ERCClass'] = blfdr_daily_max .apply(lambda row: LookupClass(row['ERC'],blfdra_bi_percs), axis=1)
-    bhfdr_daily_max ['ERCClass'] = bhfdr_daily_max .apply(lambda row: LookupClass(row['ERC'],bhfdra_bi_percs), axis=1)
+    lefdr_daily_max['ERCClass'] = lefdr_daily_max.apply(lambda row: LookupClass(row['ERC'],lefdra_erc_percs), axis=1)
+    lwfdr_daily_max['ERCClass'] = lwfdr_daily_max.apply(lambda row: LookupClass(row['ERC'],lwfdra_erc_percs), axis=1)
+    csktefdr_daily_max['ERCClass'] = csktefdr_daily_max.apply(lambda row: LookupClass(row['ERC'],csktefdra_erc_percs), axis=1)
+    csktwfdr_daily_max['ERCClass'] =csktwfdr_daily_max.apply(lambda row: LookupClass(row['ERC'],csktwfdra_erc_percs), axis=1)
+    blfdr_daily_max['ERCClass'] = blfdr_daily_max .apply(lambda row: LookupClass(row['ERC'],blfdra_erc_percs), axis=1)
+    bhfdr_daily_max ['ERCClass'] = bhfdr_daily_max .apply(lambda row: LookupClass(row['ERC'],bhfdra_erc_percs), axis=1)
     
     # Calculate the Dispatch Reponse Level from the BI and ERC classes
     lefdr_daily_max['DRLClass'] = lefdr_daily_max.apply(lambda row: LookupDRLClass(int(row['ERCClass']),int(row['BIClass']),DRL_Matrix), axis=1)

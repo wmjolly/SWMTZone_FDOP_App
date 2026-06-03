@@ -228,3 +228,4 @@ Tables/fire_danger_table_today.csv
 Tables/fire_danger_table_tomorrow.csv
 .vscode/settings.json
 Tables/swmt_zone_precip_summary.csv
+Data/wx_file.csv
