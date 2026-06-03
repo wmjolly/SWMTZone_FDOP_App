@@ -61,4 +61,7 @@ df_f_7_pt = pd.pivot_table(filtered_7dfx_df, values='Precipitation24hr(in)', ind
 
 prcp_table = pd.concat([df_f_5_pt,df_f_2_pt,df_o_2_pt,df_o_5_pt,df_o_7_pt,df_o_10_pt,df_o_30_pt],axis=1)
 prcp_table = prcp_table.round(3)
+prcp_table['Date'] = date.today().strftime("%Y-%m-%d")
+col_to_move = df.pop("Date")
+df.insert(1, "Date", col_to_move)
 prcp_table.to_csv('Tables/swmt_zone_precip_summary.csv')
