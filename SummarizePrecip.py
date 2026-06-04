@@ -26,7 +26,7 @@ today = date.today()
 thirty_days_ago = today - timedelta(days=30)
 seven_days_ahead = today + timedelta(days=7)
 femsurl = 'https://fems.fs2c.usda.gov/api/ext-climatology/download-wx-daily-summary/'
-stnlist = '241513,241520,242902,242911,243004,101019,241211,241404,242914,241507,241405,241206,241519,241403,242915,241508,244403,241308,242907,241213,242910,242905,242912,241518,241302'
+stnlist = '241513,241520,242902,242911,243004,101019,241211,241404,242914,241507,241405,241206,241519,241403,242915,241508,244403,241308,242907,241213,242910,242905,242912,241518,241302,242904'
 url = f'{femsurl}?stationIds={stnlist}&startDate={thirty_days_ago}&endDate={seven_days_ahead}&dataset=all&dataFormat=csv'
 print(url)
 response = requests.get(url)
