@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -731,11 +732,26 @@
                 const fdra = row['FDRA'] || 'Unknown FDRA';
                 const erc = parseFloat(row['ERC']) || 0;
                 
-                // Fetch user breakpoints or fallback to default
-                const bp = ERC_BREAKPOINTS[fdra] || [20, 40, 60, 80];
+                // Fetch user breakpoints. 
+                // We use a small fuzzy match just in case the CSV outputs "LoloEastFDRA" but dictionary says "Lolo East"
+                let bp = ERC_BREAKPOINTS[fdra];
+                if (!bp) {
+                    const foundKey = Object.keys(ERC_BREAKPOINTS).find(k => 
+                        fdra.toLowerCase().replace(/\s/g, '').includes(k.toLowerCase().replace(/\s/g, ''))
+                    );
+                    if (foundKey) bp = ERC_BREAKPOINTS[foundKey];
+                }
+
+                // Final safety fallback if completely missing
+                if (!bp || bp.length !== 4) {
+                    bp = [20, 40, 60, 80];
+                }
                 
                 // Max value slightly above Extreme threshold to keep gauge looking clean
                 const maxVal = Math.ceil(bp[3] * 1.25);
+                
+                // FORCE EXACTLY 5 CLASSES BY EXPLICITLY DEFINING THE START (0), ALL 4 BP, AND END (maxVal)
+                const tickMarks = [0, bp[0], bp[1], bp[2], bp[3], maxVal];
 
                 const containerId = 'hc-gauge-' + index;
                 const card = document.createElement('div');
@@ -749,7 +765,6 @@
                     <h3 class="indicator-title">${fdra}</h3>
                     <p class="indicator-subtitle">Energy Release Component</p>
                     
-                    <!-- Highcharts will target this container -->
                     <div id="${containerId}" style="width: 100%; height: 230px; margin: 0 auto;"></div>
                     
                     <div class="indicator-rating">
@@ -775,7 +790,7 @@
         		        center: ['50%', '75%'],
         		        size: '110%'
                     },
-                    tooltip: { enabled: false }, // Disable hovering over needle
+                    tooltip: { enabled: false },
                     yAxis: {
                         min: 0,
                         max: maxVal,
@@ -785,7 +800,7 @@
                         tickLength: 8,
                         tickWidth: 2,
                         minorTickInterval: null,
-			            tickPositions: bp, 	
+			            tickPositions: tickMarks, // Explicity forces the 6 boundaries for 5 sections
                         labels: {
                             distance: 12,
                             style: { fontSize: '11px', color: '#1b1b1b', fontWeight: 'bold' }
@@ -806,10 +821,8 @@
                             format: '{y}',
                             borderWidth: 0,
                             color: 'var(--text-main)',
-                            style: { 
-                                fontSize: '16px'
-                            },
-                            y: 40, // Drop label below the pivot point
+                            style: { fontSize: '16px' },
+                            y: 40,
 			                align: 'center',
 			                verticalAlign: 'bottom'
                         },
