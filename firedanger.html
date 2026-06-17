@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -439,7 +438,7 @@
         <div class="agency-titles">
             <h3 class="usda-title">U.S. Department of Agriculture</h3>
             <h2 class="fs-title">Forest Service</h2>
-	    <h1 class="wfas-title">Wildland Fire Assessment System (WFAS)</h1>
+	        <h1 class="wfas-title">Wildland Fire Assessment System (WFAS)</h1>
         </div>
     </header>
 
@@ -463,39 +462,61 @@
         <!-- TAB 1: DATA TABLES -->
         <div id="tab-tables" class="tab-content active">
             
+            <!-- TABLE 1: OBSERVED TODAY -->
             <div class="table-wrapper">
                 <div class="section-header">
-                    <h2>Observed Fire Danger</h2>
+                    <h2>Observed Fire Danger (Yesterday)</h2>
                     <div class="header-actions">
-                        <span id="observed-date" class="date-display">Loading date...</span>
-                        <a href="Tables/fire_danger_table_today.csv" download="Observed_Fire_Danger.csv" class="btn-download">
+                        <span id="obs-today-date" class="date-display">Loading date...</span>
+                        <a href="Tables/fire_danger_table_today.csv" download="Observed_Fire_Danger_Today.csv" class="btn-download">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                             Download CSV
                         </a>
                     </div>
                 </div>
                 <table>
-                    <thead id="observed-head"></thead>
-                    <tbody id="observed-body">
+                    <thead id="obs-today-head"></thead>
+                    <tbody id="obs-today-body">
                         <tr><td class="error-msg">Loading data...</td></tr>
                     </tbody>
                 </table>
             </div>
 
+            <!-- TABLE 2: FORECAST TODAY -->
             <div class="table-wrapper">
                 <div class="section-header">
-                    <h2>Forecast Fire Danger</h2>
+                    <h2>Forecast Fire Danger (Today)</h2>
                     <div class="header-actions">
-                        <span id="forecast-date" class="date-display">Loading date...</span>
-                        <a href="Tables/fire_danger_table_tomorrow.csv" download="Forecast_Fire_Danger.csv" class="btn-download">
+                        <span id="fcst-today-date" class="date-display">Loading date...</span>
+                        <a href="Tables/fire_danger_table_forecast_today.csv" download="Forecast_Fire_Danger_Today.csv" class="btn-download">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                             Download CSV
                         </a>
                     </div>
                 </div>
                 <table>
-                    <thead id="forecast-head"></thead>
-                    <tbody id="forecast-body">
+                    <thead id="fcst-today-head"></thead>
+                    <tbody id="fcst-today-body">
+                        <tr><td class="error-msg">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TABLE 3: FORECAST TOMORROW -->
+            <div class="table-wrapper">
+                <div class="section-header">
+                    <h2>Forecast Fire Danger (Tomorrow)</h2>
+                    <div class="header-actions">
+                        <span id="fcst-tom-date" class="date-display">Loading date...</span>
+                        <a href="Tables/fire_danger_table_tomorrow.csv" download="Forecast_Fire_Danger_Tomorrow.csv" class="btn-download">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            Download CSV
+                        </a>
+                    </div>
+                </div>
+                <table>
+                    <thead id="fcst-tom-head"></thead>
+                    <tbody id="fcst-tom-body">
                         <tr><td class="error-msg">Loading data...</td></tr>
                     </tbody>
                 </table>
@@ -509,7 +530,6 @@
                 <div class="section-header">
                     <h2>Precipitation Summary</h2>
                     <div class="header-actions">
-                        <!-- No date logic is injected here since precip file lacks a date column -->
                         <a href="Tables/precip_summary.csv" download="Precipitation_Summary.csv" class="btn-download">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                             Download CSV
@@ -532,7 +552,6 @@
                 <span id="indicator-date" class="date-display">Loading date...</span>
             </div>
             
-            <!-- Highcharts Gauges will be injected here by Javascript -->
             <div id="indicator-grid" class="indicator-grid">
                 <div class="error-msg" style="grid-column: 1 / -1;">Loading indicators...</div>
             </div>
@@ -582,8 +601,7 @@
                 <p><strong>Forest Service</strong></p>
                 <p>U.S. Department of Agriculture</p>
                 <p class="disclaimer">Data provided is for informational purposes only. Consult FEMS or the local dispatch center for official indices.</p>
-		        <p class="disclaimer">FEMS: https://fems.fs2c.usda.gov/.</p>
-
+		        <p class="disclaimer">FEMS: <a href="https://fems.fs2c.usda.gov/" style="color:#2491ff;">https://fems.fs2c.usda.gov/</a></p>
                 <p class="disclaimer">USDA is an equal opportunity provider, employer, and lender.</p>
             </div>
         </div>
@@ -627,9 +645,10 @@
         }
 
         // --- DATA & PARSING LOGIC ---
-        const OBSERVED_CSV_URL = 'Tables/fire_danger_table_today.csv';
-        const FORECAST_CSV_URL = 'Tables/fire_danger_table_tomorrow.csv'; 
-        const PRECIP_CSV_URL   = 'Tables/swmt_zone_precip_summary.csv'; // Added Precipitation CSV path
+        const OBSERVED_TODAY_CSV_URL   = 'Tables/fire_danger_table_today_obs.csv';
+        const FORECAST_TODAY_CSV_URL   = 'Tables/fire_danger_table_today_forecast.csv'; 
+        const FORECAST_TOMORROW_CSV_URL = 'Tables/fire_danger_table_tomorrow.csv'; 
+        const PRECIP_CSV_URL           = 'Tables/precip_summary.csv'; 
 
         const COLOR_COLUMNS = ['ERC Class', 'BI Class', 'Dispatch RL', 'SFDI'];
 
@@ -869,14 +888,16 @@
 
         // Initialize App
         window.onload = function() {
-            // Fetch Observed and run the renderIndicators callback to draw Highcharts
-            fetchAndRenderData(OBSERVED_CSV_URL, 'observed-head', 'observed-body', 'observed-date', renderIndicators);
+            // Fetch Observed Today and render Indicators
+            fetchAndRenderData(OBSERVED_TODAY_CSV_URL, 'obs-today-head', 'obs-today-body', 'obs-today-date', renderIndicators);
             
-            // Fetch Forecast
-            fetchAndRenderData(FORECAST_CSV_URL, 'forecast-head', 'forecast-body', 'forecast-date');
+            // Fetch Forecast Today
+            fetchAndRenderData(FORECAST_TODAY_CSV_URL, 'fcst-today-head', 'fcst-today-body', 'fcst-today-date');
+
+            // Fetch Forecast Tomorrow
+            fetchAndRenderData(FORECAST_TOMORROW_CSV_URL, 'fcst-tom-head', 'fcst-tom-body', 'fcst-tom-date');
 
             // Fetch Precipitation Summary
-            // (Passed 'null' for the dateId since precip file does not contain a date column)
             fetchAndRenderData(PRECIP_CSV_URL, 'precip-head', 'precip-body', null);
             
             updateGraphs(); 

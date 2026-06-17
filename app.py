@@ -115,15 +115,14 @@ if __name__ == "__main__":
     bhfdra_bi_percs = [20,40]
     
     # Create the Dispatch Response Level matrix
+    # Note: These tables show be flipped vertically from the way they are displayed in the FDOP
     DRL_Matrix = np.array([
-        ['L', 'L', 'M','H','H+'],
-        ['L', 'L', 'M','M','H'],
-        ['L', 'L', 'L','M','M']
+        ['L', 'L', 'L','M','M'],
+       ['L', 'L', 'M','M','H'],
+       ['L', 'L', 'M','H','H+'] 
         
     ])
-    
-        
-    
+     
     
     ## Summarize historical hourly data to daily 
     # Summarize hourly to daily
@@ -305,9 +304,21 @@ if __name__ == "__main__":
                                                                   "DRLClass":"Dispatch RL" , 
                                                                   "BIDailyMaxPerc":"BI Percentile",
                                                                   "ERCDailyMaxPerc":"ERC Percentile"})
+    # If there are both O's and F's in the daily max data
     if len(daily_max_today_table.ObsType.unique()) == 2:
-        daily_max_today_table = daily_max_today_table[daily_max_today_table.ObsType == "O"]
-    daily_max_today_table.to_csv('Tables/fire_danger_table_today.csv', index=False)
+        daily_max_today_table_all = daily_max_today_table
+        daily_max_today_table_obs = daily_max_today_table_all[daily_max_today_table_all.ObsType == "O"]
+        daily_max_today_table_fcst = daily_max_today_table_all[daily_max_today_table_all.ObsType == "F"]
+        daily_max_today_table_fcst.to_csv('Tables/fire_danger_table_today_forecast.csv', index=False)
+        daily_max_today_table_obs.to_csv('Tables/fire_danger_table_today_obs.csv', index=False)
+    else: # Otherwise, it'll just be F
+        daily_max_today_table.to_csv('Tables/fire_danger_table_today_forecast.csv', index=False)
+        daily_max_today_table.to_csv('Tables/fire_danger_table_today_obs.csv', index=False)
+        
+    
+    
+    
+    
     
     
     # Make the Forecast Table
